@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Wave server",
+      "type": "shell",
+      "command": "node server.js",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "wave",
+        "pattern": { "regexp": "^__never_matches__$" },
+        "background": {
+          "activesBegins": true,
+          "beginsPattern": "^.*$",
+          "endsPattern": "Wave running at"
+        }
+      },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    }
+  ]
+}

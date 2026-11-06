@@ -1,0 +1,12 @@
+{
+  "name": "wave-gesture-player",
+  "version": "1.0.0",
+  "description": "Gesture-controlled media player (HCI project) using MediaPipe hand gesture recognition in the browser",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["hci", "gesture", "mediapipe", "media-player", "user-study"],
+  "author": "Prakhar Srivastava",
+  "license": "MIT"
+}

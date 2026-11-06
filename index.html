@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wave — Gesture-Controlled Media Player</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="banner" id="studyBanner">
+  <div class="inner">
+    <div class="count" id="studyCount">Trial 0/0</div>
+    <div class="prompt" id="studyPrompt">Get ready…</div>
+    <button id="studyStop" class="danger">Stop study</button>
+    <div class="tbar"><i id="studyTimer"></i></div>
+  </div>
+</div>
+
+<header>
+  <h1>✋ <span>Wave</span> Player</h1>
+  <div class="sub">Control media with hand gestures</div>
+  <div class="pills">
+    <div class="pill" id="pillCam"><span class="dot"></span><span>Camera off</span></div>
+    <div class="pill" id="pillModel"><span class="dot"></span><span>Model not loaded</span></div>
+    <div class="pill ok" id="pillLock"><span class="dot"></span><span>Gestures active</span></div>
+    <button id="btnStudy">🧪 User study</button>
+    <button id="btnResults">📊 Results</button>
+  </div>
+</header>
+
+<main>
+  <div class="col">
+    <section class="card">
+      <h2>Now playing <span class="right" id="trackMeta"></span></h2>
+      <div class="stage audio" id="stage">
+        <video id="media" playsinline preload="auto"></video>
+        <div class="poster">
+          <div class="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="title" id="posterTitle">—</div>
+          <div class="artist" id="posterArtist"></div>
+        </div>
+        <div class="empty" id="emptyMsg" style="display:none">Drop audio or video files here, or use “Add media”.</div>
+        <div class="toast" id="toast"></div>
+        <div class="dropHint">Drop to add to playlist</div>
+      </div>
+      <div class="controls">
+        <button class="tbtn" id="bPrev" title="Previous (P)">⏮</button>
+        <button class="tbtn big" id="bPlay" title="Play / Pause (Space)">▶</button>
+        <button class="tbtn" id="bNext" title="Next (N)">⏭</button>
+        <div class="seekrow">
+          <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Seek">
+          <div class="time" id="time">0:00 / 0:00</div>
+        </div>
+        <div class="volrow">
+          <button class="tbtn" id="bMute" title="Mute (M)" style="width:38px;height:38px;font-size:16px">🔊</button>
+          <input type="range" id="vol" min="0" max="100" value="70" aria-label="Volume">
+          <span id="volLbl">70%</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Playlist
+        <span class="right">
+          <button id="bAdd">＋ Add media</button>
+          <input type="file" id="fileIn" accept="audio/*,video/*" multiple hidden>
+        </span>
+      </h2>
+      <ul class="playlist" id="playlist"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Activity log</h2>
+      <ul class="log" id="log"><li><span class="t">—</span><span>No actions yet</span></li></ul>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="card">
+      <h2>Gesture camera <span class="right" id="handHint"></span></h2>
+      <div class="cam" id="cam">
+        <video id="camVideo" playsinline muted></video>
+        <canvas id="camCanvas" width="640" height="480"></canvas>
+        <div class="placeholder" id="camPlaceholder">
+          <div style="font-size:40px">📷</div>
+          <div>Turn on the camera to control the player with your hand.<br><small>Video is processed locally in your browser and never uploaded.</small></div>
+          <button class="primary" id="bCamStart">Start camera</button>
+        </div>
+        <div class="gbadge" id="gbadge"><div class="emoji" id="gEmoji">·</div><div><div class="name" id="gName">No hand</div><div class="conf" id="gConf">Show your hand to the camera</div></div></div>
+        <svg class="ring" viewBox="0 0 52 52"><circle class="bg" cx="26" cy="26" r="20"/><circle class="fg" id="ringFg" cx="26" cy="26" r="20" stroke-dasharray="125.66" stroke-dashoffset="125.66"/></svg>
+        <div class="lockOverlay"><b>🔒</b>Gestures locked — hold ✊ for 1 s to unlock</div>
+        <div class="fps" id="fps"></div>
+      </div>
+      <div class="camBtns">
+        <button id="bCamStop" disabled>Stop camera</button>
+        <button id="bLock">🔒 Lock gestures</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Gestures <span class="right" style="font-size:12px;color:var(--muted)">Hold a gesture until the ring fills</span></h2>
+      <div class="legend" id="legend"></div>
+      <div class="keys">Keyboard: <kbd>Space</kbd> play/pause · <kbd>↑</kbd><kbd>↓</kbd> volume · <kbd>N</kbd> next · <kbd>P</kbd> previous · <kbd>M</kbd> mute · <kbd>L</kbd> lock</div>
+      <details>
+        <summary>Recognition settings</summary>
+        <div class="settings">
+          <label>Hold time before an action fires <output id="oHold"></output><input type="range" id="sHold" min="100" max="1200" step="50"></label>
+          <label>Minimum confidence <output id="oConf"></output><input type="range" id="sConf" min="0.3" max="0.95" step="0.05"></label>
+          <label>Cooldown between actions <output id="oCool"></output><input type="range" id="sCool" min="0" max="2000" step="100"></label>
+          <label>Volume repeat rate while held <output id="oRep"></output><input type="range" id="sRep" min="100" max="1000" step="50"></label>
+          <button id="bReset">Reset to defaults</button>
+        </div>
+      </details>
+    </section>
+  </div>
+</main>
+<footer>Wave · HCI project · Hand tracking by MediaPipe Gesture Recognizer (runs on-device)</footer>
+
+<!-- Study setup -->
+<div class="modal" id="mSetup">
+  <div class="box">
+    <h3>🧪 Start a study block</h3>
+    <p class="muted">The participant is shown one command at a time and must do it as fast as they can. The app logs completion time, wrong actions and timeouts. Run one block per input method (counterbalance the order between participants), then fill in the SUS questionnaire.</p>
+    <div class="form">
+      <label>Participant ID<input type="text" id="fPid" placeholder="e.g. P01"></label>
+      <label>Input method
+        <select id="fCond"><option value="gesture">Gesture (camera)</option><option value="keyboard">Keyboard shortcuts</option></select>
+      </label>
+      <label>Repetitions per command<select id="fReps"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+      <label>Timeout per trial<select id="fTimeout"><option value="8000">8 s</option><option value="10000" selected>10 s</option><option value="15000">15 s</option></select></label>
+      <div class="full note" id="setupNote">6 commands × 3 = 18 trials, in random order. During the block, only the selected input method is accepted.</div>
+    </div>
+    <div class="actions">
+      <button data-close>Cancel</button>
+      <button class="primary" id="fStart">Start block</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUS -->
+<div class="modal" id="mSus">
+  <div class="box">
+    <h3>System Usability Scale</h3>
+    <p class="muted" id="susSub">How much do you agree with each statement about the input method you just used?</p>
+    <div class="anchors" style="display:flex;justify-content:flex-end;gap:8px;font-size:12px;color:var(--muted)">1 = Strongly disagree · 5 = Strongly agree</div>
+    <div class="sus" id="susForm"></div>
+    <div class="actions">
+      <button id="susSkip">Skip</button>
+      <button class="primary" id="susSubmit">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Results -->
+<div class="modal" id="mResults">
+  <div class="box" style="width:min(860px,100%)">
+    <h3>📊 Study results</h3>
+    <p class="muted">Results are saved in this browser. Export the CSVs for your report.</p>
+    <div id="resBody"></div>
+    <div class="actions">
+      <button class="danger" id="rClear">Clear all data</button>
+      <button id="rCsvTrials">⬇ Trials CSV</button>
+      <button id="rCsvSus">⬇ SUS CSV</button>
+      <button class="primary" data-close>Close</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
